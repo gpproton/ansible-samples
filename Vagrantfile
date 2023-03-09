@@ -32,18 +32,17 @@ Vagrant.configure("2") do |config|
       end
       ## Copy initilization script
       nodeconfig.vm.provision :file do |file|
-        file.source = "./password/default"
-        file.destination = "/tmp/default_password"
+        file.source = ".secret/password.txt"
+        file.destination = "/tmp/password.txt"
       end
       ## Copy vagrant password file
       nodeconfig.vm.provision :file do |file|
-        file.source = "./scripts/initialize.sh"
-        file.destination = "/tmp/initialize.sh"
+        file.source = "scripts/_vagrant_init.sh"
+        file.destination = "/tmp/init.sh"
       end
       nodeconfig.vm.provision :shell, inline: <<-SHELL
-        chmod +x /tmp/initialize.sh
-        /tmp/initialize.sh
-        rm -rf /tmp/*
+        . /tmp/init.sh
+        vg_run_all
       SHELL
     end
   end
