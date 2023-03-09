@@ -1,6 +1,61 @@
 #!/bin/bash
-set -a
-source <(cat .env | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g")
-set +a
 
-ansible-playbook $*
+# set scripts permission and embed
+if [ -d ./scripts ]; then
+    for rc in ./scripts/*.sh; do
+        if [ -f "$rc" ]; then
+            chmod +x "$rc"
+            . "$rc"
+        fi
+    done
+fi
+
+## Load local env file to enviroment
+load_env
+
+function help_content() {
+    cat <<-EOF
+    usage: ./play [-h] [--help] [setup] [bootstrap] [boot] [run] [r] [galaxy] [g]
+	
+    options:
+
+    --help, -h:  Get help content
+
+    bootstrap, boot: Initialize virtual machine and ssh requirements
+
+    setup:  Configures requirements based on operating system.
+
+    run, r: Excecute a playbook
+    
+    galaxy, g: An alias of the ansible-galaxy command  
+
+EOF
+}
+
+case $1 in
+"bootstrap" | "boot")
+    ax_run_all
+    ;;
+"run" | "r")
+    echo "starting playbook execution..."
+    ansible-playbook ${@:2}
+    ;;
+"g" | "galaxy")
+    ansible-galaxy ${@:2}
+    ;;
+"setup")
+    echo "starting setup check..."
+    st_start_setup
+    ;;
+"-h" | "--help" | "help")
+    help_content
+    ;;
+*)
+    if [ -f $1 ]; then
+        echo "starting playbook execution..."
+        ansible-playbook $1
+    else
+        help_content
+    fi
+    ;;
+esac
