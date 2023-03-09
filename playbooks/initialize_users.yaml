@@ -1,0 +1,77 @@
+---
+- name: setup users on remote servers
+  hosts: remote
+  become: true
+  gather_facts: false
+  vars:
+    ssh_key_filepath: "{{ lookup('env', 'HOME') + '/.ssh/ansible_dev.pub' }}"
+    new_pass: /tmp/ansible_tmp_password
+    users:
+      - "{{ ssh_user }}"
+      - "ansible"
+  handlers:
+    - name: restart_ssh
+      service:
+        name: sshd
+        state: restarted
+  tasks:
+    - name: get user password
+      delegate_to: localhost
+      shell: cat {{ new_pass }}
+      register: user_password
+      run_once: true
+
+    - debug: var=user_password.stdout
+      delegate_to: localhost
+      run_once: true
+
+    - name: install the basic packages
+      package:
+        name:
+          - sudo
+          - python3
+        state: latest
+
+    - name: "create user accounts and add users to groups"
+      user:
+        name: "{{ item }}"
+        groups: "users"
+        password: "{{ user_password.stdout }}"
+        append: true
+        state: present
+        expires: -1
+        create_home: true
+        home: "/home/{{ item }}"
+        shell: "/bin/bash"
+      with_items: "{{ users }}"
+
+    - name: set authorized key taken from file
+      authorized_key:
+        user: "{{ item }}"
+        key: "{{ lookup('file', ssh_key_filepath) }}"
+        # path: "{{ lookup('env','HOME') + '/.ssh/id_ed25519.pub' }}"
+      with_items: "{{ users }}"
+
+    - name: "allow admin users to sudo without a password"
+      lineinfile:
+        dest: "/etc/sudoers" # path: in version 2.3
+        state: "present"
+        regexp: "^%admin"
+        line: "%admin ALL=(ALL) NOPASSWD: ALL"
+
+    - name: disable ssh root password login
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin prohibit-password"
+        state: present
+        backup: yes
+      notify:
+        - restart_ssh
+
+    - name: reboot host(s)
+      reboot:
+        msg: "reboot by ansible"
+        pre_reboot_delay: 5
+        post_reboot_delay: 10
+        test_command: "whoami"

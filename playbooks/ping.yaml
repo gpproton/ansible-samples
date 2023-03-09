@@ -1,0 +1,6 @@
+- name: ping all servers
+  hosts: remote
+  gather_facts: false
+  tasks:
+    - name: Ping?
+      ping:

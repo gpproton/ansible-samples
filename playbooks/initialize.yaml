@@ -1,0 +1,39 @@
+---
+- name: initialize connection requirements
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: false
+  vars:
+    ssh_key_filename: ansible_dev
+    new_pass: /tmp/ansible_tmp_password
+  tasks:
+    - name: install required local packages
+      package:
+        name:
+          - sshpass
+        state: latest
+      become: true
+      become_user: root
+
+    - name: generate SSH key "{{ ssh_key_filename }}"
+      openssh_keypair:
+        path: "{{ lookup('env','HOME') + '/.ssh/' + ssh_key_filename }}"
+        type: ed25519
+        size: 4096
+        state: present
+        force: no
+      become: true
+      become_user: "{{ ssh_user }}"
+      run_once: true
+
+    - name: generate user password
+      shell: "python -c \"import crypt, getpass, pwd; print(crypt.crypt('{{ ssh_password }}', '\\$6\\$saltsalt\\$'))\""
+      register: user_password
+      become: false
+      run_once: true
+
+    - debug: var=user_password.stdout
+
+    - name: write variable to file
+      local_action: copy content="{{ user_password.stdout }}" dest="{{ new_pass }}"
