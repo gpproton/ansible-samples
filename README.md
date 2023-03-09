@@ -1,13 +1,13 @@
-# easy-ansible
+# Easy Ansible
 
 ## Various how examples for ansible usage
 
-- [ ] User & permission setup
-  - [ ] Generate SSH key
-  - [ ] Generate ansible password from ENV file
-  - [ ] Create new ansible user
-  - [ ] Copy SSH public key to servers
-  - [ ] Disable root password login
+- [x] User & permission setup
+  - [x] Generate SSH key
+  - [x] Generate ansible password from file
+  - [x] Create new ansible user
+  - [x] Copy SSH public key to servers
+  - [x] Disable root password login
   - [ ] host file setup
 - [ ] System setup
   - [ ] Setup base packages
