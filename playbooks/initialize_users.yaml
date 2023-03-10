@@ -1,6 +1,6 @@
 ---
 - name: setup users on remote servers
-  hosts: remote
+  hosts: bootstrap
   become: true
   gather_facts: false
   vars:

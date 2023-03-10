@@ -35,14 +35,18 @@ Vagrant.configure("2") do |config|
         file.source = ".secret/password.txt"
         file.destination = "/tmp/password.txt"
       end
-      ## Copy vagrant password file
-      nodeconfig.vm.provision :file do |file|
-        file.source = "scripts/_vagrant_init.sh"
-        file.destination = "/tmp/init.sh"
-      end
       nodeconfig.vm.provision :shell, inline: <<-SHELL
-        . /tmp/init.sh
-        vg_run_all
+        fi_username=vagrant
+        fi_password=$(cat /tmp/password.txt)
+        echo 'initializing...'
+        sleep 5
+        echo 'Setting default password...'
+        usermod --password $(echo $fi_password | openssl passwd -1 -stdin) $fi_username
+        echo 'enabling password auth ...'
+        sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+        echo "Restarting ssh service.."
+        systemctl restart sshd
+        rm -rf /tmp/*
       SHELL
     end
   end
