@@ -1,5 +1,35 @@
 # Easy Ansible
 
+### Step 1
+
+```bash
+git clone https://github.com/gpproton/easy-ansible.git && \
+cd easy-ansible && \
+chmod +x ./play
+```
+
+### Step 2
+
+update inventory.ini or Vagratfile with appropriate info
+
+### Step 3
+
+Ensure either virtual box or quem (lib-virt) are available
+
+### Step 4
+
+```bash
+./play setup
+```
+
+### Step 5
+
+```bash
+./play run playbooks/ping.yaml
+## OR
+./play playbooks/ping.yaml
+```
+
 ## Various how examples for ansible usage
 
 - [x] User & permission setup
@@ -8,8 +38,8 @@
   - [x] Create new ansible user
   - [x] Copy SSH public key to servers
   - [x] Disable root password login
-  - [ ] host file setup
 - [ ] System setup
+  - [ ] host file setup
   - [ ] Setup base packages
   - [ ] Update all packages repo
   - [ ] Upgrade packages
@@ -34,11 +64,3 @@
   - [ ] Add roles to cluster leave, re-initialization
 - [ ] Sample servies
   - [ ] nignx highly available service
-
-## Windows related sample
-- [ ] Powershell
-  - [ ] Dev apps setup
-  - [ ] WSL setup
-  - [ ] Custom script execution
-- [ ] Feature management
-- [ ] VM deployment
