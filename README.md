@@ -47,12 +47,12 @@ Ensure either virtual box or quem (lib-virt) are available
   - [ ] Set desired timezone
   - [ ] Set sysctl limits
   - [ ] Set system ulimits
-- [ ] Glusterfs setup
-  - [ ] Install gluster packages
-  - [ ] Gluster firewall changes
-  - [ ] Cluster setup
-  - [ ] Volume and bricks setup
-  - [ ] fstab mount setup
+- [x] Glusterfs setup
+  - [x] Install gluster packages
+  - [x] Gluster firewall changes
+  - [x] Cluster setup
+  - [x] Volume and bricks setup
+  - [x] fstab mount setup
 - [ ] Docker setup
   - [ ] install docker
   - [ ] install docker compose
