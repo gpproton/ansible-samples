@@ -1,4 +1,4 @@
-# Easy Ansible
+# Ansible Samples
 
 ### Step 1
 
